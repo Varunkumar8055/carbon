@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//Student Table
+model Student {
+  id                String             @id @default(cuid())
+  name              String
+  dateOfBirth       String
+  aadharNumber      String             @unique
+  proctor           Professor?         @relation(fields: [proctorId], references: [id], onDelete: Cascade)
+  proctorId         String?
+  LibraryMembership LibraryMembership?
+}
+
+//Professor table
+model Professor {
+  id           String    @id @default(cuid())
+  name         String
+  seniority    Seniority
+  aadharNumber String    @unique
+  Student      Student[]
+}
+
+//Enum for seniority type
+enum Seniority {
+  JUNIOR
+  SENIOR
+  ASSOCIATE
+  HEAD
+}
+
+//LibraryMembership Table
+model LibraryMembership {
+  id         String  @id @default(cuid())
+  studentId  String  @unique
+  StudentID  Student @relation(fields: [studentId], references: [id])
+  issueDate  String
+  expiryDate String
+}
